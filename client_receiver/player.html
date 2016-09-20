@@ -1,0 +1,17 @@
+<html>
+<head>
+  <title>IMA Example receiver</title>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <script src="//www.gstatic.com/cast/sdk/libs/receiver/2.0.0/cast_receiver.js"></script>
+  <script src="//imasdk.googleapis.com/js/sdkloader/ima3.js"></script>
+  <script type="text/javascript" src="player.js"></script>
+</head>
+<body>
+  <div id="adContainer">
+    <video id="mediaElement"></video>
+    <script>
+      var player = new Player(document.getElementById('mediaElement'));
+    </script>
+  </div>
+</body>
+</html>
