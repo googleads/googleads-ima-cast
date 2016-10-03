@@ -10,8 +10,8 @@ This project hosts samples for the
   * A sample Chromecast sender. If you don't have your own, you can use our
     [Advanced Example for
     Android](https://github.com/googleads/googleads-ima-android/tree/master/AdvancedExample)
-    or our [Chromecast Example for
-    iOS](https://github.com/googleads/googleads-ima-ios/tree/master/Objective-C/ChromecastExample).
+    or our [Cast Example for
+    iOS](https://github.com/googleads/googleads-ima-ios/tree/master/Objective-C/CastExample).
 
 ### Downloads
 Check out the
@@ -20,7 +20,7 @@ downloadable zips of the source.
 
 ### More Info
 For more information, see the documentation at
-https://developers.google.com/interactive-media-ads/docs/sdks/cast/.
+https://developers.google.com/interactive-media-ads/docs/sdks/cast/client-side.
 
 ### Announcements and Updates
 For API and client library updates and news, please follow our
