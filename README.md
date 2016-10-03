@@ -1,7 +1,7 @@
 ## Google Ads Chromecast Receiver IMA SDK Samples
 
 This project hosts samples for the
-[Chromecast Receiver IMA SDK](https://developers.google.com/interactive-media-ads/docs/sdks/cast/).
+[Chromecast Receiver IMA SDK](https://developers.google.com/interactive-media-ads/docs/sdks/cast/client-side).
 
 ### Requirements
   * Your favorite text editor
