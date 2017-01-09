@@ -92,7 +92,7 @@ Player.prototype.broadcast_ = function(message) {
  * @private
  */
 Player.prototype.initIMA_ = function() {
-  this.currentContentTime_ = 0;
+  this.currentContentTime_ = -1;
   var adDisplayContainer = new google.ima.AdDisplayContainer(
       document.getElementById('adContainer'), this.mediaElement_);
   adDisplayContainer.initialize();
