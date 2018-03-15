@@ -97,6 +97,7 @@ Player.prototype.initIMA_ = function() {
       document.getElementById('adContainer'), this.mediaElement_);
   adDisplayContainer.initialize();
   this.adsLoader_ = new google.ima.AdsLoader(adDisplayContainer);
+  this.adsLoader_.getSettings().setPlayerType('cast/client-side');
   this.adsLoader_.addEventListener(
       google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED,
       this.onAdsManagerLoaded_.bind(this), false);
