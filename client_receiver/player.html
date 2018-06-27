@@ -1,16 +1,16 @@
-<html>
+<html manifest="nocache.mf">
 <head>
   <title>IMA Example receiver</title>
   <link rel="stylesheet" type="text/css" href="style.css">
-  <script src="//www.gstatic.com/cast/sdk/libs/receiver/2.0.0/cast_receiver.js"></script>
+  <script src="//www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js"></script>
   <script src="//imasdk.googleapis.com/js/sdkloader/ima3.js"></script>
   <script type="text/javascript" src="player.js"></script>
 </head>
 <body>
   <div id="adContainer">
-    <video id="mediaElement"></video>
+    <cast-media-player id="player"></cast-media-player>
     <script>
-      var player = new Player(document.getElementById('mediaElement'));
+      var player = new Player();
     </script>
   </div>
 </body>

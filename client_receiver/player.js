@@ -16,21 +16,23 @@
 
 'use strict';
 
+const NAMESPACE = 'urn:x-cast:com.google.ads.ima.cast';
+
 /**
  * Creates new player for video and ad playback.
- * @param {cast.receiver.MediaManager} mediaElement The video element.
+ *
  */
-var Player = function(mediaElement) {
-  var namespace = 'urn:x-cast:com.google.ads.ima.cast';
-  this.mediaElement_ = mediaElement;
-  this.mediaManager_ = new cast.receiver.MediaManager(this.mediaElement_);
-  this.castReceiverManager_ = cast.receiver.CastReceiverManager.getInstance();
-  this.imaMessageBus_ = this.castReceiverManager_.getCastMessageBus(namespace);
-  this.castReceiverManager_.start();
+let Player = function() {
+  this.context_ = cast.framework.CastReceiverContext.getInstance();
+  this.playerManager_ = this.context_.getPlayerManager();
+  this.mediaElement_ = document.getElementById('player').getMediaElement();
 
-  this.originalOnLoad_ = this.mediaManager_.onLoad.bind(this.mediaManager_);
-  this.originalOnEnded_ = this.mediaManager_.onEnded.bind(this.mediaManager_);
-  this.originalOnSeek_ = this.mediaManager_.onSeek.bind(this.mediaManager_);
+  const options = new cast.framework.CastReceiverOptions();
+  // Map of namespace names to their types.
+  options.customNamespaces = {};
+  options.customNamespaces[NAMESPACE] =
+      cast.framework.system.MessageType.STRING;
+  this.context_.start(options);
 
   this.setupCallbacks_();
 };
@@ -40,51 +42,58 @@ var Player = function(mediaElement) {
  * @private
  */
 Player.prototype.setupCallbacks_ = function() {
-  var self = this;
+  let self = this;
 
   // Chromecast device is disconnected from sender app.
-  this.castReceiverManager_.onSenderDisconnected = function() {
-    window.close();
-  };
+  this.context_.addEventListener(
+      cast.framework.system.EventType.SENDER_DISCONNECTED, (event) => {
+        window.close();
+  });
 
   // Receives messages from sender app. The message is a comma separated string
   // where the first substring indicates the function to be called and the
   // following substrings are the parameters to be passed to the function.
-  this.imaMessageBus_.onMessage = function(event) {
+  this.context_.addCustomMessageListener(NAMESPACE, (event) => {
     console.log(event.data);
-    var message = event.data.split(',');
-    var method = message[0];
+    let message = event.data.split(',');
+    let method = message[0];
     switch (method) {
       case 'requestAd':
-        var adTag = message[1];
-        var currentTime = parseFloat(message[2]);
+        let adTag = message[1];
+        let currentTime = parseFloat(message[2]);
         self.requestAd_(adTag, currentTime);
         break;
       case 'seek':
-        var time = parseFloat(message[1]);
+        let time = parseFloat(message[1]);
         self.seek_(time);
         break;
       default:
         self.broadcast_('Message not recognized');
         break;
     }
-  };
+  });
+
 
   // Initializes IMA SDK when Media Manager is loaded.
-  this.mediaManager_.onLoad = function(event) {
-    self.originalOnLoadEvent_ = event;
-    self.initIMA_();
-    self.originalOnLoad_(self.originalOnLoadEvent_);
-  };
+  this.playerManager_.setMessageInterceptor(
+      cast.framework.messages.MessageType.LOAD,
+      (request) => {
+        if (!this.request_) {
+          self.initIMA_();
+        }
+        this.request_ = request;
+        this.playerManager_.pause();
+        return request;
+      });
 };
 
 /**
  * Sends messages to all connected sender apps.
- * @param {!string} message Message to be sent to senders.
+ * @param {string} message Message to be sent to senders.
  * @private
  */
 Player.prototype.broadcast_ = function(message) {
-  this.imaMessageBus_.broadcast(message);
+  this.context_.sendCustomMessage(NAMESPACE, undefined, message);
 };
 
 /**
@@ -93,7 +102,7 @@ Player.prototype.broadcast_ = function(message) {
  */
 Player.prototype.initIMA_ = function() {
   this.currentContentTime_ = -1;
-  var adDisplayContainer = new google.ima.AdDisplayContainer(
+  let adDisplayContainer = new google.ima.AdDisplayContainer(
       document.getElementById('adContainer'), this.mediaElement_);
   adDisplayContainer.initialize();
   this.adsLoader_ = new google.ima.AdsLoader(adDisplayContainer);
@@ -114,7 +123,7 @@ Player.prototype.initIMA_ = function() {
  * @private
  */
 Player.prototype.onAdsManagerLoaded_ = function(adsManagerLoadedEvent) {
-  var adsRenderingSettings = new google.ima.AdsRenderingSettings();
+  let adsRenderingSettings = new google.ima.AdsRenderingSettings();
   adsRenderingSettings.playAdsAfterTime = this.currentContentTime_;
 
   // Get the ads manager.
@@ -153,7 +162,9 @@ Player.prototype.onAdError_ = function(adErrorEvent) {
   if (this.adsManager_) {
     this.adsManager_.destroy();
   }
-  this.mediaElement_.play();
+  // Play content.
+  this.playerManager_.load(this.request_);
+  this.playerManager_.seek(this.currentContentTime_);
 };
 
 /**
@@ -163,8 +174,6 @@ Player.prototype.onAdError_ = function(adErrorEvent) {
 Player.prototype.onContentPauseRequested_ = function() {
   this.currentContentTime_ = this.mediaElement_.currentTime;
   this.broadcast_('onContentPauseRequested,' + this.currentContentTime_);
-  this.mediaManager_.onEnded = function(event) {};
-  this.mediaManager_.onSeek = function(event) {};
 };
 
 /**
@@ -173,10 +182,8 @@ Player.prototype.onContentPauseRequested_ = function() {
  */
 Player.prototype.onContentResumeRequested_ = function() {
   this.broadcast_('onContentResumeRequested');
-  this.mediaManager_.onEnded = this.originalOnEnded_.bind(this.mediaManager_);
-  this.mediaManager_.onSeek = this.originalOnSeek_.bind(this.mediaManager_);
 
-  this.originalOnLoad_(this.originalOnLoadEvent_);
+  this.playerManager_.load(this.request_);
   this.seek_(this.currentContentTime_);
 };
 
@@ -192,7 +199,7 @@ Player.prototype.onAllAdsCompleted_ = function() {
 
 /**
  * Sets time video should seek to when content resumes and requests ad tag.
- * @param {!string} adTag ad tag to be requested.
+ * @param {string} adTag ad tag to be requested.
  * @param {!float} currentTime time of content video we should resume from.
  * @private
  */
@@ -200,7 +207,7 @@ Player.prototype.requestAd_ = function(adTag, currentTime) {
   if (currentTime != 0) {
     this.currentContentTime_ = currentTime;
   }
-  var adsRequest = new google.ima.AdsRequest();
+  let adsRequest = new google.ima.AdsRequest();
   adsRequest.adTagUrl = adTag;
   adsRequest.linearAdSlotWidth = this.mediaElement_.width;
   adsRequest.linearAdSlotHeight = this.mediaElement_.height;
@@ -216,6 +223,6 @@ Player.prototype.requestAd_ = function(adTag, currentTime) {
  */
 Player.prototype.seek_ = function(time) {
   this.currentContentTime_ = time;
-  this.mediaElement_.currentTime = time;
-  this.mediaElement_.play();
+  this.playerManager_.seek(time);
+  this.playerManager_.play();
 };
