@@ -1,12 +1,9 @@
 /**
  * Copyright 2016 Google Inc. All Rights Reserved.
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
  *     http://www.apache.org/licenses/LICENSE-2.0
- *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,7 +17,6 @@ const NAMESPACE = 'urn:x-cast:com.google.ads.ima.cast';
 
 /**
  * Creates new player for video and ad playback.
- *
  */
 let Player = function() {
   this.context_ = cast.framework.CastReceiverContext.getInstance();
@@ -82,10 +78,6 @@ Player.prototype.setupCallbacks_ = function() {
           self.initIMA_();
         }
         this.request_ = request;
-        if (this.playerManager_.getPlayerState() ===
-            cast.framework.messages.PlayerState.PLAYING) {
-          this.playerManager_.pause();
-        }
         return request;
       });
 };
@@ -106,7 +98,7 @@ Player.prototype.broadcast_ = function(message) {
 Player.prototype.initIMA_ = function() {
   this.currentContentTime_ = -1;
   let adDisplayContainer = new google.ima.AdDisplayContainer(
-      document.getElementById('adContainer'), this.mediaElement_);
+      document.getElementById('adContainer'));
   adDisplayContainer.initialize();
   this.adsLoader_ = new google.ima.AdsLoader(adDisplayContainer);
   this.adsLoader_.getSettings().setPlayerType('cast/client-side');
@@ -145,7 +137,8 @@ Player.prototype.onAdsManagerLoaded_ = function(adsManagerLoadedEvent) {
       this.onContentResumeRequested_.bind(this));
 
   try {
-    this.adsManager_.init(this.mediaElement_.width, this.mediaElement_.height,
+    this.adsManager_.init(google.ima.AdsRenderingSettings.AUTO_SCALE,
+        google.ima.AdsRenderingSettings.AUTO_SCALE,
         google.ima.ViewMode.FULLSCREEN);
     this.adsManager_.start();
   } catch (adError) {
@@ -175,6 +168,7 @@ Player.prototype.onAdError_ = function(adErrorEvent) {
  * @private
  */
 Player.prototype.onContentPauseRequested_ = function() {
+  this.playerManager_.stop();
   this.currentContentTime_ = this.mediaElement_.currentTime;
   this.broadcast_('onContentPauseRequested,' + this.currentContentTime_);
 };
