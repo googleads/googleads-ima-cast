@@ -44,7 +44,7 @@ Player.prototype.setupCallbacks_ = function() {
   this.context_.addEventListener(
       cast.framework.system.EventType.SENDER_DISCONNECTED, (event) => {
         window.close();
-  });
+      });
 
   // Receives messages from sender app. The message is a comma separated string
   // where the first substring indicates the function to be called and the
@@ -72,8 +72,7 @@ Player.prototype.setupCallbacks_ = function() {
 
   // Initializes IMA SDK when Media Manager is loaded.
   this.playerManager_.setMessageInterceptor(
-      cast.framework.messages.MessageType.LOAD,
-      (request) => {
+      cast.framework.messages.MessageType.LOAD, (request) => {
         if (!this.request_) {
           self.initIMA_();
         }
@@ -97,17 +96,18 @@ Player.prototype.broadcast_ = function(message) {
  */
 Player.prototype.initIMA_ = function() {
   this.currentContentTime_ = -1;
-  let adDisplayContainer = new google.ima.AdDisplayContainer(
-      document.getElementById('adContainer'));
+  let adDisplayContainer =
+      new google.ima.AdDisplayContainer(document.getElementById('adContainer'));
   adDisplayContainer.initialize();
   this.adsLoader_ = new google.ima.AdsLoader(adDisplayContainer);
   this.adsLoader_.getSettings().setPlayerType('cast/client-side');
   this.adsLoader_.addEventListener(
       google.ima.AdsManagerLoadedEvent.Type.ADS_MANAGER_LOADED,
       this.onAdsManagerLoaded_.bind(this), false);
-  this.adsLoader_.addEventListener(google.ima.AdErrorEvent.Type.AD_ERROR,
-      this.onAdError_.bind(this), false);
-  this.adsLoader_.addEventListener(google.ima.AdEvent.Type.ALL_ADS_COMPLETED,
+  this.adsLoader_.addEventListener(
+      google.ima.AdErrorEvent.Type.AD_ERROR, this.onAdError_.bind(this), false);
+  this.adsLoader_.addEventListener(
+      google.ima.AdEvent.Type.ALL_ADS_COMPLETED,
       this.onAllAdsCompleted_.bind(this), false);
 };
 
@@ -123,12 +123,11 @@ Player.prototype.onAdsManagerLoaded_ = function(adsManagerLoadedEvent) {
 
   // Get the ads manager.
   this.adsManager_ = adsManagerLoadedEvent.getAdsManager(
-    this.mediaElement_, adsRenderingSettings);
+      this.mediaElement_, adsRenderingSettings);
 
   // Add listeners to the required events.
   this.adsManager_.addEventListener(
-      google.ima.AdErrorEvent.Type.AD_ERROR,
-      this.onAdError_.bind(this));
+      google.ima.AdErrorEvent.Type.AD_ERROR, this.onAdError_.bind(this));
   this.adsManager_.addEventListener(
       google.ima.AdEvent.Type.CONTENT_PAUSE_REQUESTED,
       this.onContentPauseRequested_.bind(this));
@@ -137,7 +136,8 @@ Player.prototype.onAdsManagerLoaded_ = function(adsManagerLoadedEvent) {
       this.onContentResumeRequested_.bind(this));
 
   try {
-    this.adsManager_.init(google.ima.AdsRenderingSettings.AUTO_SCALE,
+    this.adsManager_.init(
+        google.ima.AdsRenderingSettings.AUTO_SCALE,
         google.ima.AdsRenderingSettings.AUTO_SCALE,
         google.ima.ViewMode.FULLSCREEN);
     this.adsManager_.start();
