@@ -1,3 +1,5 @@
+goog.module('google3.personalization.zipit.frontend.javascript.external-javascript.ads.interactivemedia.sdk.clientside.samples.googleads-ima-cast.client_receiver.player');
+
 /**
  * Copyright 2016 Google Inc. All Rights Reserved.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -10,8 +12,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-'use strict';
 
 const NAMESPACE = 'urn:x-cast:com.google.ads.ima.cast';
 
@@ -68,7 +68,6 @@ Player.prototype.setupCallbacks_ = function() {
         break;
     }
   });
-
 
   // Initializes IMA SDK when Media Manager is loaded.
   this.playerManager_.setMessageInterceptor(
