@@ -1,4 +1,3 @@
-goog.module('google3.personalization.zipit.frontend.javascript.external-javascript.ads.interactivemedia.sdk.clientside.samples.googleads-ima-cast.client_receiver.player');
 
 /**
  * Copyright 2016 Google Inc. All Rights Reserved.
