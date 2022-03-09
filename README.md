@@ -9,9 +9,9 @@ This project hosts samples for the
 *   A webserver on which to host the sample
 *   A cast device set up for development
 *   A sample cast sender. If you don't have your own, you can use our
-    [Advanced Example for Android](https://github.com/googleads/googleads-ima-android/tree/master/AdvancedExample)
+    [Advanced Example for Android](https://github.com/googleads/googleads-ima-android/tree/main/AdvancedExample)
     or our
-    [Cast Example for iOS](https://github.com/googleads/googleads-ima-ios/tree/master/Objective-C/CastExample).
+    [Cast Example for iOS](https://github.com/googleads/googleads-ima-ios/tree/main/Objective-C/CastExample).
 
 ### Downloads
 
