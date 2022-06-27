@@ -26,7 +26,7 @@ https://developers.google.com/interactive-media-ads/docs/sdks/cast/client-side/r
 
 ### Announcements and Updates
 
-For API and client library updates and news, please follow our
+For API and client library updates and news, follow our
 [Google Ads Developers blog](http://googleadsdeveloper.blogspot.com/)
 
 Copyright 2016 Google Inc.
